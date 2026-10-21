@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "altimate": {
+      "url": "https://mcp.getaltimate.com/mcp",
+      "bearer_token_env_var": "ALTIMATE_API_KEY",
+      "env_http_headers": {
+        "X-Tenant": "ALTIMATE_TENANT",
+        "X-Timezone": "ALTIMATE_TIMEZONE"
+      }
+    }
+  }
+}

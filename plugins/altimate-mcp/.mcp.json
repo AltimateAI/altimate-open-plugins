@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "altimate": {
+      "type": "http",
+      "url": "${ALTIMATE_MCP_URL:-https://mcp.getaltimate.com/mcp}",
+      "headers": {
+        "Authorization": "Bearer ${ALTIMATE_API_KEY}",
+        "X-Tenant": "${ALTIMATE_TENANT}",
+        "X-Timezone": "${ALTIMATE_TIMEZONE:-UTC}"
+      }
+    }
+  }
+}

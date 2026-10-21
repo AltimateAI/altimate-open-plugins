@@ -1,0 +1,18 @@
+{
+  "name": "altimate-open-plugins",
+  "owner": {
+    "name": "Altimate AI",
+    "url": "https://github.com/AltimateAI"
+  },
+  "description": "Altimate AI plugins for agent clients: the Altimate MCP connection and the skills that teach an agent to use it.",
+  "version": "0.4.0",
+  "plugins": [
+    {
+      "name": "altimate-mcp",
+      "source": "./plugins/altimate-mcp",
+      "description": "Connects the Altimate MCP and adds skills for Snowflake and Databricks cost, usage, auto-tune, teams, Studio and lineage questions.",
+      "version": "0.4.0",
+      "category": "data"
+    }
+  ]
+}

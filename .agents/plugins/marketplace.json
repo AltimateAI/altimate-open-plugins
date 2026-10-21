@@ -1,0 +1,20 @@
+{
+  "name": "altimate-open-plugins",
+  "interface": {
+    "displayName": "Altimate"
+  },
+  "plugins": [
+    {
+      "name": "altimate-mcp",
+      "source": {
+        "source": "local",
+        "path": "./plugins/altimate-mcp"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Data"
+    }
+  ]
+}

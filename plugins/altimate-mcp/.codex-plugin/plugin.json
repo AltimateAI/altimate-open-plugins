@@ -1,0 +1,28 @@
+{
+  "name": "altimate-mcp",
+  "version": "0.4.0",
+  "description": "Connects the Altimate MCP and adds skills for Snowflake and Databricks cost, usage, auto-tune, teams, Studio and lineage questions.",
+  "author": {
+    "name": "Altimate AI",
+    "url": "https://github.com/AltimateAI"
+  },
+  "homepage": "https://github.com/AltimateAI/altimate-open-plugins",
+  "repository": "https://github.com/AltimateAI/altimate-open-plugins",
+  "keywords": ["altimate", "mcp", "snowflake", "databricks", "finops", "cost", "lineage"],
+  "skills": "./skills/",
+  "mcpServers": "./codex.mcp.json",
+  "interface": {
+    "displayName": "Altimate MCP",
+    "shortDescription": "Ask Altimate about Snowflake and Databricks cost, usage, auto-tune, teams and lineage.",
+    "longDescription": "Connects the Altimate MCP with your own Altimate API key and tenant, and adds skills that pick the right tool for a question, chain tools for drill-downs, and read results with their scope and caveats.",
+    "developerName": "Altimate AI",
+    "category": "Data",
+    "capabilities": ["Read"],
+    "websiteURL": "https://github.com/AltimateAI/altimate-open-plugins",
+    "defaultPrompt": [
+      "How has our Snowflake bill moved month by month this year?",
+      "Which warehouses cost the most last week, and who drove it?",
+      "What would break downstream if we dropped this table?"
+    ]
+  }
+}
