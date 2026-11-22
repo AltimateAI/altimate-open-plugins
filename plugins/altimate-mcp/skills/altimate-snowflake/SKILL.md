@@ -77,3 +77,13 @@ Example, "Top 10 warehouses by cost last week, with credits":
 ```json
 {"tool": "warehouse_cost_by_warehouse", "arguments": {"start_date": "2026-10-05", "end_date": "2026-10-11", "order_by": "total_cost", "limit": 10}}
 ```
+
+## Answer checklist
+
+Before sending, state each item that applies to the question and tool (rules: "Windows, rates and NULL" in `altimate-mcp`). Skip an item the tool cannot bear on, such as the rate for lineage:
+
+- Window: requested vs used, with the time zone; a shorter window first. A figure that ignores the window (such as an annualized one) says so.
+- Accounts: which accounts, teams or workspaces the figure covers.
+- Rate basis: the rate applied per account and month, or "rate not disclosed" or that none is available.
+- NULL handling: how many rows were `null`, kept apart from zero.
+- Cost basis: the `provenance` cost basis the figure uses.

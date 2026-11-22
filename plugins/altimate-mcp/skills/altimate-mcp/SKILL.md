@@ -48,7 +48,7 @@ Not available: query text or ids, who reads a table, other users' Studio session
 - On an aggregate tool with a period, `granularity` (`day`, `week`, `month`) sets the bucket. A tool without a period returns one row per name over the whole window.
 - `filters` is `{filter: [values]}`, only the filters the tool's schema lists; a row matches any listed value, up to 50 values. Values are exact business names, as a row of that tool returns them. A required filter is listed as required with its choices.
 - `order_by` and `descending` sort by one of the tool's sortable fields. `limit` is 1 to the tool's maximum, default 100.
-- "Mean", "average per day" or "the last N days": call a trend tool at `granularity` `day` over N complete days, ending yesterday, or on the day of `provenance.data_through` when that is earlier. Never include today: it is partial. The mean is the sum of the daily rows divided by N; say the dates. A tool without a period returns the window total, which answers "how much"; divide it by N only when the user asked for a per-day figure, and say so.
+- "Mean", "average per day" or "the last N days": call a trend tool at `granularity` `day` over N complete days, ending yesterday, or on the day of `provenance.data_through` when that is earlier. Never include today: it is partial. The mean follows the "Means" rule in "Windows, rates and NULL"; say the dates. A tool without a period returns the window total, which answers "how much"; divide it by N only when the user asked for a per-day figure, and say so.
 - `team` is the exact team name, chosen as in "Choose the team". Never pass `sql`, `where`, `metrics`, `group_by`, ids or a tenant. They are refused as `invalid_input`.
 
 ## Call a record tool
@@ -66,6 +66,31 @@ Record tools take `filters`, `cursor` and `limit`. `data.total` counts every mat
 - When `data.limit_reached` is true, the rows are the first ones in the requested order, not the whole breakdown. Do not sum them as a total; take the total from the matching figure tool (for example `total_cost`) or a trend tool.
 - Ranked results can put `null` before real values, and `too_large` can be raised before `limit` is applied. Check the returned rows before calling them a top N; narrow the window or filters when necessary.
 - Keep realized and potential savings separate. Never present potential savings as money already saved. Call the remainder "potential savings", never "missed" savings, and give it only when the user asks what is still available, as one total rather than per month.
+
+## Windows, rates and NULL
+
+These three rules apply to every answer on every platform. The platform skills refer to them and do not restate them.
+
+**Window.** Echo the window you asked for and the window the data actually covers.
+- Keep three things apart: the dates the user asked for, the dates you sent, and the coverage the data confirms. Coverage comes from explicit coverage metadata (`provenance.data_through` gives only the end) or from a granular series that matches the question (daily rows for a daily question). A scalar total, such as `total_cost`, has no rows to read: call a trend tool over the same window to learn the coverage, or say the covered start is unknown.
+- When the confirmed coverage starts later or ends earlier than requested (for example a 12-month question answered from 3 months of data), say so first, before any figure, and give the covered dates. When a bound cannot be established, say it is unknown. Never present a shorter window as the one asked for, and never scale it up to the requested length.
+- A bucket date is the bucket, not the first covered day: a monthly row dated the 1st does not show that data began on the 1st. Label bucket dates as buckets.
+- Name the time zone of the dates: the configured bucket time zone (`ALTIMATE_TIMEZONE`, see `altimate-mcp-setup`) when known, otherwise UTC unless the response `scope` or `provenance` says otherwise.
+- Month boundaries: a window that does not start on the 1st or end on the last day of a month has partial months at its edges. Label them partial and do not compare them with full months. A month still in progress is partial; so is the first month of data when data began mid-month.
+- Answer order: the shorter-window statement comes before the figure. It takes precedence over any "lead with the figure" instruction in this or another skill.
+- Means: divide by the days observed, not the days requested. A day with a documented zero (a returned row with value 0) counts; a day with a `null` value or no row does not. Say how many days were observed, and name unknown or uncovered days.
+
+**Rate.** A credit is not one price. The price per credit differs between accounts and can change between months.
+- Never convert credits to currency with one assumed rate, and never apply one account's or month's rate to another.
+- Use the currency figure a tool returns (`unit` is `currency`) and say which cost basis `provenance` names. When a tool returns only credits, answer in credits and say that no rate is available from the tool.
+- For every figure in currency, state the rate applied and its basis at the account and month grain when the response reports them. When it does not, say "rate not disclosed". Say which accounts or months the figure covers.
+- Do not add credits across accounts and price the sum. Do not guess a rate from list prices or an earlier answer.
+
+**NULL.** A missing metric value (`null` in a cost, count or usage field) is unknown, never zero. Fields with documented meaning keep it: a `null` end of a Snowflake lineage edge is a stage.
+- Read `data.columns` descriptions before interpreting a column that holds `null`: they say what a missing value means.
+- Count the rows where the field is `null` and say how many of the returned rows that is (for example "4 of 20 tables have no cost value").
+- Leave `null` rows out of sums, averages and rankings, and say that you did. Do not print them as 0 or as an empty cell without a note.
+- If every metric value is `null`, report it as unknown. That is different from `data.no_data`, which means no data for the question.
 
 ## Errors
 
@@ -101,4 +126,14 @@ Record tools take `filters`, `cursor` and `limit`. `data.total` counts every mat
 
 ## Answer the question
 
-Lead with the requested value or finding, its tenant and team scope (from `scope`) and date window. Add the unit and one caveat only when it changes the interpretation. For realized and potential savings, give the two figures separately. Do not add a table by default; use one only when the user asks for a breakdown or a series, such as daily cost. Stop once the question is answered; offer a deeper breakdown only if it would help the user's next decision. Never paste the tool catalog, raw response or unrelated limitations into the answer.
+Lead with the requested value or finding (after any shorter-window statement, see "Windows, rates and NULL"), its tenant and team scope (from `scope`) and date window. Add the unit and one caveat only when it changes the interpretation. For realized and potential savings, give the two figures separately. Do not add a table by default; use one only when the user asks for a breakdown or a series, such as daily cost. Stop once the question is answered; offer a deeper breakdown only if it would help the user's next decision. Never paste the tool catalog, raw response or unrelated limitations into the answer.
+
+## Answer checklist
+
+Before sending, state each item that applies to the question and tool (rules: "Windows, rates and NULL" in `altimate-mcp`). Skip an item the tool cannot bear on, such as the rate for lineage:
+
+- Window: requested vs used, with the time zone; a shorter window first. A figure that ignores the window (such as an annualized one) says so.
+- Accounts: which accounts, teams or workspaces the figure covers.
+- Rate basis: the rate applied per account and month, or "rate not disclosed" or that none is available.
+- NULL handling: how many rows were `null`, kept apart from zero.
+- Cost basis: the `provenance` cost basis the figure uses.
