@@ -41,3 +41,13 @@ Serving cost per thousand tokens: `databricks_model_serving_cost` for the window
 ## Writing the answer
 
 Lead with the requested answer, currency, scope and window. Use a small table only when comparing several values. Include only caveats that change that answer, such as incomplete top-N rows or different cost bases. Do not list every tool call or broaden a single-number question into a spend audit. Keep realized savings and potential savings separate.
+
+## Answer checklist
+
+Before sending, confirm the answer states (rules: "Windows, rates and NULL" in `altimate-mcp`):
+
+- Window: requested vs used, with the time zone; a shorter window first.
+- Accounts: which accounts, teams or workspaces the figure covers.
+- Rate basis: the rate applied per account and month, or that none is available.
+- NULL handling: how many rows were `null`, kept apart from zero.
+- Cost basis: the `provenance` cost basis the figure uses.

@@ -25,3 +25,13 @@ Answer with the requested table, its upstream or downstream dependencies, and th
 ## What breaks if this table changes?
 
 `databricks_table_lineage`, `direction: "downstream"`, `depth: 3`. Answer with the dependent tables, ordered by hop. Databricks has no table usage tool, so say that how busy each dependent table is cannot be shown.
+
+## Answer checklist
+
+Before sending, confirm the answer states (rules: "Windows, rates and NULL" in `altimate-mcp`):
+
+- Window: requested vs used, with the time zone; a shorter window first.
+- Accounts: which accounts, teams or workspaces the figure covers.
+- Rate basis: the rate applied per account and month, or that none is available.
+- NULL handling: how many rows were `null`, kept apart from zero.
+- Cost basis: the `provenance` cost basis the figure uses.

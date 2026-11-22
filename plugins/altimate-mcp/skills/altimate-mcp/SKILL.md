@@ -67,6 +67,27 @@ Record tools take `filters`, `cursor` and `limit`. `data.total` counts every mat
 - Ranked results can put `null` before real values, and `too_large` can be raised before `limit` is applied. Check the returned rows before calling them a top N; narrow the window or filters when necessary.
 - Keep realized and potential savings separate. Never present potential savings as money already saved. Call the remainder "potential savings", never "missed" savings, and give it only when the user asks what is still available, as one total rather than per month.
 
+## Windows, rates and NULL
+
+These three rules apply to every answer on every platform. The platform skills refer to them and do not restate them.
+
+**Window.** Echo the window you asked for and the window the data actually covers.
+- Compare the first and last row or bucket with `start_date` and `end_date`, and read `provenance.data_through`. When the data starts later or ends earlier than requested (for example a 12-month question answered from 3 months of data), say so in the first sentence, before any figure, and give the covered dates. Never present a shorter window as the one asked for, and never scale it up to the requested length.
+- Name the time zone of the dates: UTC unless the response `scope` or `provenance` says otherwise.
+- Month boundaries: a window that does not start on the 1st or end on the last day of a month has partial months at its edges. Label them partial and do not compare them with full months. A month still in progress is partial; so is the first month of data when data began mid-month.
+
+**Rate.** A credit is not one price. The price per credit differs between accounts and can change between months.
+- Never convert credits to currency with one assumed rate, and never apply one account's or month's rate to another.
+- Use the currency figure a tool returns (`unit` is `currency`) and say which cost basis `provenance` names. When a tool returns only credits, answer in credits and say that no rate is available from the tool.
+- When a figure spans several accounts or months, say which accounts it covers and whether the rate was applied per account and per month by the tool. If the response does not say, say that the rate basis is not stated; do not add credits across accounts and price the sum.
+- Do not guess a rate from list prices or an earlier answer.
+
+**NULL.** `null` is unknown, never zero.
+- Read `data.columns` descriptions before interpreting a column that holds `null`: they say what a missing value means.
+- Count the rows where the field is `null` and say how many of the returned rows that is (for example "4 of 20 tables have no cost value").
+- Leave `null` rows out of sums, averages and rankings, and say that you did. Do not print them as 0 or as an empty cell without a note.
+- If every row is `null`, report the value as unknown. That is different from `data.no_data`, which means no data for the question.
+
 ## Errors
 
 | Code | Meaning | What to do |
@@ -102,3 +123,13 @@ Record tools take `filters`, `cursor` and `limit`. `data.total` counts every mat
 ## Answer the question
 
 Lead with the requested value or finding, its tenant and team scope (from `scope`) and date window. Add the unit and one caveat only when it changes the interpretation. For realized and potential savings, give the two figures separately. Do not add a table by default; use one only when the user asks for a breakdown or a series, such as daily cost. Stop once the question is answered; offer a deeper breakdown only if it would help the user's next decision. Never paste the tool catalog, raw response or unrelated limitations into the answer.
+
+## Answer checklist
+
+Before sending, confirm the answer states (rules: "Windows, rates and NULL" in `altimate-mcp`):
+
+- Window: requested vs used, with the time zone; a shorter window first.
+- Accounts: which accounts, teams or workspaces the figure covers.
+- Rate basis: the rate applied per account and month, or that none is available.
+- NULL handling: how many rows were `null`, kept apart from zero.
+- Cost basis: the `provenance` cost basis the figure uses.

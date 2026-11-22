@@ -1,6 +1,6 @@
 {
   "name": "altimate-mcp",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Connects the Altimate MCP and adds skills for Snowflake and Databricks cost, usage, auto-tune, teams, Studio and lineage questions.",
   "author": {
     "name": "Altimate AI",
