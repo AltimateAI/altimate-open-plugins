@@ -15,7 +15,7 @@ Tools: `tables_by_cost` and the table figures (`table_annualized_cost` and its s
 - More than 5000 edges is cut: the first page comes back with `truncated` true and no `next_cursor`; lower the depth for a complete answer.
 - A call with `team` (or from a caller in one team) sees only edges that team's rules cover: the database or schema of either table. A team whose rules name only accounts, warehouses, users, roles or tags sees no lineage. `scope` names the team. Choose `team` as in the `altimate-mcp` skill.
 - A table that is missing, deleted or outside the caller's scope is `not_found`; a table that exists but has no edges returns no records. An empty result can mean "no lineage" or "outside your scope"; say both are possible.
-- `tables_by_cost` lists tables as the Tables page does: each row carries `database`, `schema_name`, `table`, `owner`, `account` and the measures (annualized cost, reads, writes). `database.schema_name.table` is the name to pass to `table_lineage`. Its filters are named `database`, `schema` and `table`. Its figures are annualized estimates: the date window does not change them. A table missing from it is not proof that the table is unused.
+- `tables_by_cost` lists tables as the Tables page does: each row carries `database`, `schema_name`, `table`, `owner`, `account` and the measures (annualized cost, reads, writes). `database.schema_name.table` is the name to pass to `table_lineage`. Its filters are named `database`, `schema` and `table`. Its figures are annualized estimates: the date window does not change them, so say that the figure is annualized and not for the requested window. A table missing from it is not proof that the table is unused.
 - There is no "who reads this table".
 
 Answer with the requested table, its upstream or downstream dependencies, and the scope of the result. Give hop counts or usage only when they help answer the question. Keep the scope caveat for an empty or team-scoped result; do not include unrelated cost or catalog detail.
@@ -56,10 +56,10 @@ Answer with the requested table, its upstream or downstream dependencies, and th
 
 ## Answer checklist
 
-Before sending, confirm the answer states (rules: "Windows, rates and NULL" in `altimate-mcp`):
+Before sending, state each item that applies to the question and tool (rules: "Windows, rates and NULL" in `altimate-mcp`). Skip an item the tool cannot bear on, such as the rate for lineage:
 
-- Window: requested vs used, with the time zone; a shorter window first.
+- Window: requested vs used, with the time zone; a shorter window first. A figure that ignores the window (such as an annualized one) says so.
 - Accounts: which accounts, teams or workspaces the figure covers.
-- Rate basis: the rate applied per account and month, or that none is available.
+- Rate basis: the rate applied per account and month, or "rate not disclosed" or that none is available.
 - NULL handling: how many rows were `null`, kept apart from zero.
 - Cost basis: the `provenance` cost basis the figure uses.

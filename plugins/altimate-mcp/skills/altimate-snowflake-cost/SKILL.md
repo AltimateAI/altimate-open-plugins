@@ -43,14 +43,14 @@ Cost per query: `query_cost_trend` with `granularity: "week"`; divide `total_cos
 
 ## Writing the answer
 
-Lead with the requested answer, currency, scope and window. Use a small table only when comparing several values. Include only caveats that change that answer, such as incomplete top-N rows or different cost bases. Do not list every tool call or broaden a single-number question into a spend audit. Keep realized savings and potential savings separate.
+Lead with the requested answer, currency, scope and window; a shorter-window statement comes first (`altimate-mcp`, "Windows, rates and NULL"). Use a small table only when comparing several values. Include only caveats that change that answer, such as incomplete top-N rows or different cost bases. Do not list every tool call or broaden a single-number question into a spend audit. Keep realized savings and potential savings separate.
 
 ## Answer checklist
 
-Before sending, confirm the answer states (rules: "Windows, rates and NULL" in `altimate-mcp`):
+Before sending, state each item that applies to the question and tool (rules: "Windows, rates and NULL" in `altimate-mcp`). Skip an item the tool cannot bear on, such as the rate for lineage:
 
-- Window: requested vs used, with the time zone; a shorter window first.
+- Window: requested vs used, with the time zone; a shorter window first. A figure that ignores the window (such as an annualized one) says so.
 - Accounts: which accounts, teams or workspaces the figure covers.
-- Rate basis: the rate applied per account and month, or that none is available.
+- Rate basis: the rate applied per account and month, or "rate not disclosed" or that none is available.
 - NULL handling: how many rows were `null`, kept apart from zero.
 - Cost basis: the `provenance` cost basis the figure uses.

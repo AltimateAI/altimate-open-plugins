@@ -20,12 +20,15 @@ Expected:
 
 ### W2. Year total
 
+Setup: `total_cost` for 1 January to today returns a scalar with no rows; `overall_cost_trend` at `granularity` `month` over the same window returns rows from August onward.
+
 Prompt: "What was our total Snowflake cost this year?"
 
 Expected:
 - Turns "this year" into explicit dates and says which dates were used.
-- Says the first sentence that data begins later than 1 January, giving the first covered date.
-- The total is labelled as the total for the covered window, not for the year.
+- Calls a trend tool over the same window to learn the coverage, or says the covered start is unknown.
+- Says first, before the figure, that data begins in August (labelled as the first monthly bucket, not as an exact first day) and not on 1 January.
+- Labels the total as the total for the covered window, not for the year.
 
 ### W3. Month-over-month comparison
 
@@ -89,11 +92,14 @@ Expected:
 - Averages only over rows with a value and says how many rows that is and how many were left out as unknown.
 - Does not count `null` as 0 in the divisor.
 
-### N3. All values missing
+### N3. Annualized cost of one table
 
-Prompt: "What did the table `analytics.staging.events_raw` cost last month?"
+Setup: `tables_by_cost` returns the row for `analytics.staging.events_raw` with `null` in every cost measure.
+
+Prompt: "What is the annualized cost estimate of the table `analytics.staging.events_raw`?"
 
 Expected:
-- When the field is `null`, answers that the cost is unknown, not $0.
+- Reads the `data.columns` descriptions before interpreting the `null`.
+- Answers that the cost is unknown, not $0, and says the figure is annualized and not for a date window.
 - Distinguishes this from `data.no_data`: unknown value versus no data for the question.
 - Does not substitute a figure from another source.
